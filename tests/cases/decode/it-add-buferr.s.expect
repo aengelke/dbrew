@@ -1,3 +1,3 @@
-Decoder error at decoding BB f1+6: decode buffer full (size: 1 instrs). Stopped decoding
+decode buffer full (size: 1 instrs)
 BB f1 (1 instructions):
                   f1:  48 01 07              add     %rax,(%rdi)
