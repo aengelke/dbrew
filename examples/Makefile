@@ -8,21 +8,6 @@ CPPFLAGS=-I../include
 OPTS=-O2 -mavx
 CFLAGS=-std=gnu99 $(OPTS)
 
-## no PIE: flags dependent on compiler/version
-CCNAME:=$(strip $(shell $(CC) --version | head -c 3))
-ifeq ($(CCNAME),$(filter $(CCNAME),gcc cc icc))
- $(info ** gcc compatible compiler detected: $(CC))
- CFLAGS  += -fno-pie
- ifeq ($(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 5),1)
-  LDFLAGS += -no-pie
- endif
-else ifeq ($(shell $(CC) --version | head -c 5),clang)
- $(info ** clang detected: $(CC))
- CFLAGS += -fno-pie
-else
- $(error Compiler $(CC) not supported)
-endif
-
 all: $(EXAMPLES)
 
 stencil: stencil.o ../libdbrew.a

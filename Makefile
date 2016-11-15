@@ -12,8 +12,8 @@ endif
 
 WFLAGS2=-Wswitch-enum -Wswitch -Waggregate-return
 
-CFLAGS=-g -std=gnu99 -Iinclude -Iinclude/priv $(WFLAGS)
-LDFLAGS=-g
+CFLAGS=-g -std=gnu99 -fPIE -Iinclude -Iinclude/priv $(WFLAGS)
+LDFLAGS=-g -pie
 
 # always compile examples and DBrew snippets with optimizations
 # this allows other DBrew code to still be debuggable
@@ -24,11 +24,6 @@ CCNAME:=$(strip $(shell $(CC) --version | head -c 3))
 ifeq ($(CCNAME),$(filter $(CCNAME),gcc cc icc))
  # gcc/cc
  $(info ** gcc compatible compiler detected: $(CC))
- CFLAGS  += -fno-pie
- ifeq ($(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 5),1)
-  LDFLAGS += -no-pie
- endif
-
  # some snippets 'switch' to AVX mode. hack to avoid 32-byte stack alignment
  # FIXME: rewriter should move such stack alignment to outermost level
  # clang does not know these options
@@ -37,7 +32,6 @@ ifeq ($(CCNAME),$(filter $(CCNAME),gcc cc icc))
 else ifeq ($(shell $(CC) --version | head -c 5),clang)
  # clang
  $(info ** clang detected: $(CC))
- CFLAGS += -fno-pie
  SNIPPETSFLAGS=$(OPTFLAGS)
 else
  $(error Compiler $(CC) not supported)

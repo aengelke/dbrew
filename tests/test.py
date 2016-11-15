@@ -87,27 +87,13 @@ class TestCase:
 
         substs = {
             "cc": self.getProperty("cc", os.environ["CC"] if "CC" in os.environ else "cc"),
-            "ccflags": self.getProperty("ccflags", "-std=c99 -g"),
+            "ccflags": self.getProperty("ccflags", "-std=c99 -g -fPIE -pie"),
             "dbrew": "-I../include ../libdbrew.a",
             "outfile": self.outFile,
             "infile": self.sourceFile,
             "ofile": self.objFile,
             "driver": self.driver
         }
-
-        # switch off PIE
-        match = re.search('^(cc|gcc|clang)', substs["cc"])
-        if match:
-            substs["ccflags"] += " -fno-pie"
-            if (match.group(1) == 'gcc') or (match.group(1) == 'cc'):
-                s = Popen([substs["cc"], "-dumpversion"],stdout=PIPE).communicate();
-                v = s[0].decode("utf-8")[0];
-                if int(v) > 4:
-                    substs["ccflags"] += " -no-pie"
-        else:
-            print("FAIL (Compiler " + substs["cc"] + " not supported)")
-            self.status = TestCase.FAILED
-            raise TestFailException()
 
         compileDef = "{cc} {ccflags} -o {outfile} {infile} {driver} {dbrew}"
         compileArgs = self.getProperty("compile", compileDef).format(**substs)
